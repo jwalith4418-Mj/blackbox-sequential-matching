@@ -1,0 +1,10 @@
+cff-version: 1.2.0
+message: "Please cite the exact commit and archive SHA-256 when referencing this submission."
+title: "Blackbox: Sequential Matching - Round 2 Research Submission"
+type: software
+authors:
+  - name: "Team Blackbox"
+repository-code: "https://github.com/jwalith4418-Mj/blackbox-sequential-matching"
+url: "https://github.com/jwalith4418-Mj/blackbox-sequential-matching"
+date-released: 2026-10-17
+abstract: "Reproducible synthetic sequential reciprocal-matching experiments with a conservative submitted policy and evaluated experimental learned controllers."

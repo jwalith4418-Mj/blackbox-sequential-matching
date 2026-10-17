@@ -1,0 +1,27 @@
+{
+  "active_mode": "conservative",
+  "actual_docker": false,
+  "actual_windows": false,
+  "archive_bytes": 10159792,
+  "archive_sha256": "c03ae58397104e276a67d7d343e8be4635a499352111c24e1e774d0ea9dee936",
+  "ci": "prepared_pending_execution",
+  "files_verified": 641,
+  "fresh_extraction_checks": 10,
+  "github": {
+    "artifact_commit": "340cdd9cd4661368607f6df01004336998119146",
+    "published": true,
+    "repository": "https://github.com/jwalith4418-Mj/blackbox-sequential-matching"
+  },
+  "nested_archives": 0,
+  "passed": true,
+  "priority_files": 0,
+  "review_partition": {
+    "dated_without_qualifying_recorded_mutual_yes": 78,
+    "mutual_yes_but_late": 153,
+    "no_completed_date": 7
+  },
+  "scope": "Packaging-time snapshot; later CI results are separate run receipts.",
+  "staged_model_deployment": "rejected",
+  "valid_original_comparison_episodes": 684,
+  "valid_staged_trial_episodes": 24
+}

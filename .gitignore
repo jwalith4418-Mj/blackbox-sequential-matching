@@ -1,0 +1,15 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+.env.*
+!.env.example
+Blackbox_Round2_Submission/
+Blackbox_Replay*/
+Blackbox_Refit*/
+Blackbox_Check*/
+*Receipt.json
+*.log
+Thumbs.db
+.DS_Store

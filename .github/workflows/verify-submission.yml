@@ -1,0 +1,55 @@
+name: Verify exact Blackbox submission
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - Blackbox_Submission.zip
+      - Blackbox_Submission.zip.sha256
+      - ci/**
+      - .github/workflows/verify-submission.yml
+permissions:
+  contents: read
+jobs:
+  exact-artifact:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
+    env:
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.12.14'
+      - id: archive
+        name: Verify exact ZIP and extract
+        run: python ci/verify_archive.py --destination "${{ runner.temp }}/blackbox-project" --receipt "${{ runner.temp }}/blackbox-receipts/archive.json"
+      - name: Install pinned test dependencies
+        run: python -m pip install -r "${{ steps.archive.outputs.project_root }}/research/requirements-train.txt"
+      - name: Native Windows execution
+        if: runner.os == 'Windows'
+        run: python ci/run_native.py --project "${{ steps.archive.outputs.project_root }}" --output "${{ runner.temp }}/blackbox-receipts/native.json" --require-windows
+      - name: Linux source execution
+        if: runner.os == 'Linux'
+        run: python ci/run_native.py --project "${{ steps.archive.outputs.project_root }}" --output "${{ runner.temp }}/blackbox-receipts/native.json"
+      - name: Actual constrained Linux Docker baseline
+        if: runner.os == 'Linux'
+        run: python "${{ steps.archive.outputs.project_root }}/tools/validate_submission_runtime.py" --minutes 30 --output "${{ runner.temp }}/blackbox-docker"
+      - name: Preserve receipts and logs
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: blackbox-runtime-${{ matrix.os }}-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/blackbox-receipts/
+            ${{ runner.temp }}/blackbox-docker/
+          if-no-files-found: error
+          retention-days: 30

@@ -1,0 +1,27 @@
+Blackbox: Sequential Matching, Round 2
+
+This repository distributes a frozen Team Blackbox research submission.
+New repository documentation and ci/ verification tools are MIT-licensed
+under the root LICENSE. The archive retains its existing ownership and terms.
+
+Organizer: Romeo & Juliet / RomeoJulietLove
+Public kit: https://github.com/RomeoJulietLove/The-Sequential-Matching-Problem
+Pinned research kit: a8e26b35118cfa8e886a02f93984923e43ab64f6
+Starter source: MIT, Copyright (c) 2026 RomeoJulietLove.
+Synthetic records: separate DATA_LICENSE.md provenance conditions.
+
+After extracting the archive, consult:
+  LICENSING.md
+  research/starter/LICENSE
+  research/starter/DATA_LICENSE.md
+  runtime/starter/LICENSE
+  runtime/starter/DATA_LICENSE.md
+  evidence/dependency_licences/
+
+Training uses NumPy and SciPy under their retained upstream terms.
+Python and container base-image components retain their own notices.
+No endorsement by the organizers or dependency authors is implied.
+
+AI assistance: ChatGPT/Codex supported development and documentation;
+Gemini and Antigravity supplied additional reviews. The submitted inference
+path does not call a hosted LLM. Project authors remain responsible for claims.
