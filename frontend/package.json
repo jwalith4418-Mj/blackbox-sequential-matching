@@ -1,0 +1,14 @@
+{
+  "name": "blackbox-live-matching",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": { "node": "24.x" },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "test": "npm run build && node scripts/test-engine.mjs && node scripts/test-results.mjs && node scripts/test-pair-explanations.mjs && node scripts/test-vercel-api.mjs && node scripts/test-live-ui.mjs && python3 scripts/test-casebook.py && python3 scripts/verify-replayed-details.py",
+    "dev": "node scripts/dev-server.mjs"
+  },
+  "dependencies": { "@libsql/client": "0.18.0" },
+  "devDependencies": { "esbuild": "0.28.2" }
+}

@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.runtime/
+.sites-runtime/
+.vercel/
+.env*
+*.db
+*.db-*
+__pycache__/
+*.pyc
+*-validation.json
+public/data/confirmation-details/confirmation-*.json

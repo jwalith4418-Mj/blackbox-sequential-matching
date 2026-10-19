@@ -100,3 +100,10 @@ ChatGPT/Codex assisted implementation, tooling and documentation; Gemini and Ant
 See [licensing scope](LICENSING.md), [third-party notices](NOTICE), [contribution guidance](CONTRIBUTING.md) and [citation metadata](CITATION.cff). Repository documentation/tools have an MIT license. The archived submission and upstream assets retain their existing terms; this repository does not automatically relicense the team archive.
 
 Publishing a repository does not itself complete the organiser's submission process. Pin the exact artifact checksum and commit in the required submission channel.
+
+## Live application source
+
+The latest frontend and its standalone Vercel target are in [`frontend/`](frontend/). This includes the wrapped Results layout, pair-selection explanations, mutual/differing/unknown attributes, and all 480 historical case details (242 positive-score runs / 238 zero-score runs). The frozen research ZIP above is unchanged.
+
+See [`frontend/README.md`](frontend/README.md) for local commands, database configuration, privacy boundaries and Vercel import settings. Set the Vercel Root Directory to `frontend` and retain Vercel Authentication for all deployments. The Vercel adapter passed local checks; remote publishing was blocked by HTTP 403 for the connected workspace, so a Vercel URL is not yet claimed.
+

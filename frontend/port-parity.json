@@ -1,0 +1,8 @@
+{
+  "passed": true,
+  "observed_states": 120,
+  "policy_actions_compared": 240,
+  "families": 6,
+  "known_seed": 101,
+  "scope": "Conservative questions and matching port parity; separate JS simulator is not Python-RNG compatible"
+}

@@ -1,0 +1,23 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import {createSession,step,snapshot,pairResults,metrics} from '../lib/engine.mjs';
+const fixture=JSON.parse(fs.readFileSync('lib/fixture.json'));
+const s=createSession({pool:'guided',family:'development',seed:2026},fixture);
+for(let d=0;d<100;d++)step(s);
+const before=JSON.stringify(s),view=snapshot(s);
+assert.deepEqual(Object.fromEntries(['introductions','mutual_acceptances','dates','official_couples','eventual_mutual_yes'].map(k=>[k,view.metrics[k]])),{introductions:42,mutual_acceptances:16,dates:15,official_couples:0,eventual_mutual_yes:3});
+assert.equal(view.pair_results.length,42);assert.equal(view.pair_results.filter(r=>r.status==='late_feedback').length,3);
+assert.equal(JSON.stringify(s),before);assert(view.pair_results.every(r=>r.names.length===2&&r.replies.length===2));
+const c=createSession({pool:'guided',family:'development',seed:1},fixture);c.day=100;c.introductions=[{introduction_id:'case',user_a:'a',user_b:'b',assigned_day:0}];
+const event=(kind,id,value,day)=>({introduction_id:'case',member_id:id,event:kind,value,occurred_day:value===null?null:day,observed_day:day});
+c.events=[event('introduction_response','a','yes',1),event('introduction_response','b','yes',2),event('date_happened',null,true,10),event('second_meeting_intention','a','yes',12),event('second_meeting_intention','b','yes',13)];
+assert.equal(pairResults(c)[0].status,'timely');assert.equal(metrics(c).official_couples,1);
+c.day=11;let r=pairResults(c)[0];assert.equal(r.status,'pending');assert(r.replies.every(p=>p.second===null));assert.equal(metrics(c).eventual_mutual_yes,0);
+c.day=100;c.events[4]=event('second_meeting_intention','b','yes',15);r=pairResults(c)[0];assert.equal(r.status,'late_feedback');assert.equal(r.replies[1].second.delay,5);assert.equal(metrics(c).official_couples,0);assert.equal(metrics(c).eventual_mutual_yes,1);
+c.events[4]=event('second_meeting_intention','b',null,15);assert.equal(pairResults(c)[0].status,'missing_second_feedback');assert.equal(metrics(c).eventual_mutual_yes,0);
+c.events[4]=event('second_meeting_intention','b','no',13);assert.equal(pairResults(c)[0].status,'no_mutual_second_yes');
+c.events[2]=event('date_happened',null,true,35);c.events[3]=event('second_meeting_intention','a','yes',36);c.events[4]=event('second_meeting_intention','b','yes',37);r=pairResults(c)[0];assert.equal(r.status,'date_outside_window');assert.equal(r.both_second_yes,true);assert.equal(r.eventual_mutual_yes,false);
+// Result history is complete even when the activity and queue previews are capped.
+c.introductions=Array.from({length:125},(_,i)=>({...c.introductions[0],introduction_id:'row'+i}));c.events=[];assert.equal(snapshot(c).pair_results.length,125);assert.equal(snapshot(c).introductions.length,100);
+const receipt={passed:true,scope:'Saved-state results projection; synthetic JS session, not official benchmark evidence',known_session: view.metrics,checks:['day-100 seed-2026 matches screenshot totals','all three late-interest pairs present','projection does not mutate saved state','future feedback withheld','timely versus late labels','missing is separate from explicit No','30-day date rule retained','full history beyond queue limit']};
+fs.writeFileSync('results-validation.json',JSON.stringify(receipt,null,2));console.log(JSON.stringify(receipt));
