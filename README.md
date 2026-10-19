@@ -2,6 +2,8 @@
 
 A reproducible research submission for **The Sequential Matching Problem**, Round 2, by Team Blackbox.
 
+**For the interactive demo:** read the [application README](frontend/README.md) for the matching algorithm, architecture, API flow, and code map. Use the [presenter guide](frontend/PRESENTATION.md) for a five-minute talk, demo steps, and technical Q&A.
+
 Blackbox asks clarification questions and selects reciprocal introductions under incomplete information, delayed outcomes and limited availability. The official objective is **Mutual Second-Meeting Intention (MSMI)**: a date within 30 days of introduction and a recorded Yes from both participants within three days of that date.
 
 **Submitted policy: `conservative`.** Learned controllers remain research candidates because the measured evidence does not establish reliable superiority. All records are synthetic; the results do not establish real-world relationship prediction.
@@ -101,9 +103,26 @@ See [licensing scope](LICENSING.md), [third-party notices](NOTICE), [contributio
 
 Publishing a repository does not itself complete the organiser's submission process. Pin the exact artifact checksum and commit in the required submission channel.
 
-## Live application source
+## Interactive application and presentation
 
-The latest frontend and its standalone Vercel target are in [`frontend/`](frontend/). This includes the wrapped Results layout, pair-selection explanations, mutual/differing/unknown attributes, and all 480 historical case details (242 positive-score runs / 238 zero-score runs). The frozen research ZIP above is unchanged.
+The interactive application is in [`frontend/`](frontend/). It runs saved synthetic matching sessions, explains reciprocal eligibility and greedy pair allocation, and presents results with reply timelines. Its casebook exposes all 480 original research runs: 242 with at least one qualifying couple and 238 zero-score runs.
 
-See [`frontend/README.md`](frontend/README.md) for local commands, database configuration, privacy boundaries and Vercel import settings. Set the Vercel Root Directory to `frontend` and retain Vercel Authentication for all deployments. The Vercel adapter passed local checks; remote publishing was blocked by HTTP 403 for the connected workspace, so a Vercel URL is not yet claimed.
+| Start here | Contents |
+| --- | --- |
+| [Application README](frontend/README.md) | Product overview, matching logic, architecture, file map, API contracts, evidence, and limits. |
+| [Presenter guide](frontend/PRESENTATION.md) | Five-minute script, local demo walkthrough, likely questions, and precise result wording. |
+| [Matching engine](frontend/lib/engine.mjs) | Clarification, reciprocal constraints, soft agreement scoring, greedy allocation, and simulation. |
+| [Pair explanations](frontend/lib/pair-explanation.mjs) | Observed attributes, eligibility checks, scores, and allocation conflicts. |
+| [Session store](frontend/lib/session-store.ts) | Ownership, persistence, revision checks, and request retry handling. |
 
+For a local demo, use Node.js 24:
+
+~~~bash
+cd frontend
+npm ci
+npm run dev
+~~~
+
+Open http://localhost:3000. Local sessions use SQLite. Python 3 available as `python` is needed for `npm test`.
+
+The live JavaScript simulator and conservative policy port are separate from the official Python benchmark. Learned models do not drive the live application. The frozen submission ZIP above remains unchanged; consult the application README for current verification scope and known adapter limitations.
