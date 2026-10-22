@@ -37,7 +37,7 @@ def prepare(source,destination,receipt):
  if destination not in victim.resolve().parents or sha(victim)!=STRAY_SHA:raise ValueError('Scratch path/identity mismatch')
  victim.unlink()
  del manifest['files'][STRAY]
- (destination/'SUBMISSION_MANIFEST.json').write_text(json.dumps(manifest,indent=2,sort_keys=True)+'\n',encoding='utf-8')
+ (destination/'SUBMISSION_MANIFEST.json').write_text(json.dumps(manifest,indent=2,sort_keys=True)+'\n',encoding='utf-8',newline='\n')
  after=inventory(destination)
  expected={k:v for k,v in before.items() if k not in (STRAY,'SUBMISSION_MANIFEST.json')}
  if {k:v for k,v in after.items() if k!='SUBMISSION_MANIFEST.json'}!=expected:raise ValueError('Unexpected derivative content change')

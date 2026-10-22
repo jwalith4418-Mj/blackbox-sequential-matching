@@ -18,7 +18,7 @@ class PreparationTests(unittest.TestCase):
   original=sha(self.source/'SUBMISSION_MANIFEST.json')
   result=prepare(self.source,self.destination,self.receipt)
   self.assertEqual(result['source_files'],641);self.assertEqual(result['derivative_files'],640)
-  self.assertEqual(result['derivative_manifest_sha256'],'cbc309fd69165ec8be490a21902ffd4a88b87119dea13e9f8614800e3c581b23')
+  self.assertEqual(result['derivative_manifest_sha256'],'010a5ae23caaa9a1f47714159f1c00019cfb71201b52fd37516a65354377fb28')
   self.assertTrue((self.source/STRAY).exists());self.assertFalse((self.destination/STRAY).exists())
   self.assertEqual(sha(self.source/'SUBMISSION_MANIFEST.json'),original)
   for name in json.loads((self.source/'runtime/RUNTIME_MANIFEST.json').read_text(encoding='utf-8'))['files']:
