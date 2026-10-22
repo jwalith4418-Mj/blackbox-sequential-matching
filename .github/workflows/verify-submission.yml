@@ -2,6 +2,7 @@ name: Verify exact Blackbox submission
 on:
   workflow_dispatch:
   push:
+    branches: [main]
     paths:
       - Blackbox_Submission.zip
       - Blackbox_Submission.zip.sha256
@@ -14,7 +15,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        include:
+          - os: ubuntu-24.04
+            python: '3.12.14'
+          - os: windows-2025
+            python: '3.12.10'
     runs-on: ${{ matrix.os }}
     timeout-minutes: 45
     env:
@@ -22,27 +27,37 @@ jobs:
       OMP_NUM_THREADS: '1'
       MKL_NUM_THREADS: '1'
       PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONUTF8: '1'
     steps:
+      - name: Initialize diagnostic output
+        shell: bash
+        run: |
+          mkdir -p "$RUNNER_TEMP/blackbox-receipts"
+          printf 'Setup started. This file does not assert that verification passed.\n' > "$RUNNER_TEMP/blackbox-receipts/SETUP_STARTED.txt"
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           persist-credentials: false
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
-          python-version: '3.12.14'
+          python-version: ${{ matrix.python }}
       - id: archive
         name: Verify exact ZIP and extract
         run: python ci/verify_archive.py --destination "${{ runner.temp }}/blackbox-project" --receipt "${{ runner.temp }}/blackbox-receipts/archive.json"
       - name: Install pinned test dependencies
         run: python -m pip install -r "${{ steps.archive.outputs.project_root }}/research/requirements-train.txt"
+      - name: Test runtime preparation safeguards
+        run: python -m unittest discover -s ci -p "test_*.py" -v
+      - name: Prepare audited runtime derivative
+        run: python ci/prepare_runtime.py --project "${{ steps.archive.outputs.project_root }}" --destination "${{ runner.temp }}/blackbox-runtime-check" --receipt "${{ runner.temp }}/blackbox-receipts/runtime-preparation.json"
       - name: Native Windows execution
         if: runner.os == 'Windows'
-        run: python ci/run_native.py --project "${{ steps.archive.outputs.project_root }}" --output "${{ runner.temp }}/blackbox-receipts/native.json" --require-windows
+        run: python ci/run_native.py --project "${{ steps.archive.outputs.project_root }}" --runtime-project "${{ runner.temp }}/blackbox-runtime-check" --output "${{ runner.temp }}/blackbox-receipts/native.json" --require-windows
       - name: Linux source execution
         if: runner.os == 'Linux'
-        run: python ci/run_native.py --project "${{ steps.archive.outputs.project_root }}" --output "${{ runner.temp }}/blackbox-receipts/native.json"
+        run: python ci/run_native.py --project "${{ steps.archive.outputs.project_root }}" --runtime-project "${{ runner.temp }}/blackbox-runtime-check" --output "${{ runner.temp }}/blackbox-receipts/native.json"
       - name: Actual constrained Linux Docker baseline
         if: runner.os == 'Linux'
-        run: python "${{ steps.archive.outputs.project_root }}/tools/validate_submission_runtime.py" --minutes 30 --output "${{ runner.temp }}/blackbox-docker"
+        run: python ci/run_container.py --project "${{ runner.temp }}/blackbox-runtime-check" --minutes 30 --output "${{ runner.temp }}/blackbox-docker"
       - name: Preserve receipts and logs
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
